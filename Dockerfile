@@ -1,0 +1,1 @@
+FROM astrocrpublic.azurecr.io/astronomer/astro-runtime:12.2.0
