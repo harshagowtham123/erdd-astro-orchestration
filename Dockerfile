@@ -1,1 +1,1 @@
-FROM astrocrpublic.azurecr.io/astronomer/astro-runtime:12.2.0
+FROM astrocrpublic.azurecr.io/astronomer/astro-runtime:13.0.0
