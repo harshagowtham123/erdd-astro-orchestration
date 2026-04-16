@@ -35,7 +35,8 @@ with DAG(
 ) as dag:
     wait_for_excel = S3KeySensor(
         task_id="wait_for_excel",
-        bucket_key=f"s3://{BUCKET}/{INPUT_PREFIX}*.xlsx",
+        bucket_name=BUCKET,
+        bucket_key=f"{INPUT_PREFIX}*.xlsx",
         wildcard_match=True,
         aws_conn_id="caenergy_aws",
         poke_interval=60,
