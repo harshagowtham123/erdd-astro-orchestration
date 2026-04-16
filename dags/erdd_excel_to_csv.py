@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 
 import pandas as pd
 from airflow import DAG
+from airflow.utils.dates import days_ago
 from airflow.decorators import task
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from airflow.providers.amazon.aws.sensors.s3 import S3KeySensor
@@ -26,7 +27,7 @@ def pick_latest_xlsx_key(s3: S3Hook) -> str:
 
 with DAG(
     dag_id="erdd_excel_to_csv",
-    start_date=datetime(2026, 1, 1),
+    start_date=days_ago(1),
     schedule=None,  # trigger manually first; we can add schedule later
     catchup=False,
     default_args={"retries": 2, "retry_delay": timedelta(minutes=2)},
@@ -36,7 +37,7 @@ with DAG(
         task_id="wait_for_excel",
         bucket_key=f"s3://{BUCKET}/{INPUT_PREFIX}*.xlsx",
         wildcard_match=True,
-        aws_conn_id="aws_default",
+        aws_conn_id="caenergy_aws",
         poke_interval=60,
         timeout=60 * 60,
         mode="reschedule",
@@ -44,7 +45,7 @@ with DAG(
 
     @task
     def extract_tabs_and_write_csv():
-        s3 = S3Hook(aws_conn_id="aws_default")
+        s3 = S3Hook(aws_conn_id="caenergy_aws")
 
         excel_key = pick_latest_xlsx_key(s3)
         excel_bytes = s3.get_key(excel_key, BUCKET).get()["Body"].read()
